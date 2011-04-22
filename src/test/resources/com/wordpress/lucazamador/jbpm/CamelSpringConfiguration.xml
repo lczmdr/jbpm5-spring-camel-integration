@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:drools="http://drools.org/schema/drools-spring"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://drools.org/schema/drools-spring org/drools/container/spring/drools-spring-1.2.0.xsd
+                           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+  <drools:grid-node id="node" />
+
+  <drools:resource id="resource" type="BPMN2" source="classpath:com/wordpress/lucazamador/jbpm/Sample.bpmn" />
+
+  <drools:kbase id="kbase" node="node">
+    <drools:resources>
+      <drools:resource ref="resource" />
+    </drools:resources>
+  </drools:kbase>
+
+  <drools:ksession id="ksession" type="stateful" kbase="kbase" node="node" />
+
+  <bean id="droolsPolicy" class="org.drools.camel.component.DroolsPolicy" />
+
+  <camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
+
+    <route>
+      <from uri="direct:test-with-session" />
+      <to uri="drools:node/ksession" />
+    </route>
+
+  </camelContext>
+
+</beans>
